@@ -28,14 +28,14 @@ public class DrawGraph implements Serializable {
     {
         _graphAlgo=new Graph_Algo();
         _graph=new DGraph();
-        StdDraw.setGui(this);
+
     }
     public DrawGraph(graph g)
     {
         this._graph = g;
         _graphAlgo=new Graph_Algo();
         _graphAlgo.init(this._graph);
-        StdDraw.setGui(this);
+
     }
 
     public void Edges(){
