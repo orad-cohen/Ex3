@@ -27,6 +27,7 @@ package utils;
  *
  ******************************************************************************/
 
+import Server.game_service;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
@@ -641,7 +642,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	// singleton pattern: client can't instantiate
 	private StdDraw() { }
 	private static DGraph _graph = new DGraph();
-	private static MyGameGUI _game = new MyGameGUI();
+	private static game_service _game;
 
 	// static initializer
 	static {
@@ -1606,7 +1607,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 
 
-	public static void Init(DGraph g, MyGameGUI e ){
+	public static void Init(DGraph g, game_service e ){
 		_graph = g;
 		_game = e;
 	}
@@ -1619,21 +1620,27 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		while (nodeIte.hasNext()){
 			node_data node = nodeIte.next();
 			x_max = Math.max(x_max, node.getLocation().x());
-			x_min = Math.min(x_min, node.getLocation().y());
-			y_max = Math.max(y_max, node.getLocation().x());
+			x_min = Math.min(x_min, node.getLocation().x());
+			y_max = Math.max(y_max, node.getLocation().y());
 			y_min = Math.min(y_min, node.getLocation().y());
 
 		}
-		StdDraw.setCanvasSize((int)(Math.abs(x_max)+Math.abs(x_min))+900,(int)(Math.abs(y_max)+Math.abs(y_min))+900);
+		setCanvasSize((int)(Math.abs(x_max)+Math.abs(x_min))+900,(int)(Math.abs(y_max)+Math.abs(y_min))+900);
 
+		setXscale(x_min-Math.abs(x_max-x_min)/2,x_max+(Math.abs(x_max-x_min)/2));
+		setYscale(y_min-Math.abs(x_max-x_min)/2,y_max+Math.abs(x_max-x_min)/2);
 	}
 
 
 	public static void DrawNode(Point3D td, node_data n){
+		setPenColor(Color.BLUE);
+		setPenRadius(0.01);
 		point(td.x(), td.y());
-		text(td.x(), td.y()+0.4, ""+ n.getKey());
+		text(td.x(), td.y()+0.001, ""+ n.getKey());
 	}
 	public static void DrawEdge(edge_data edge){
+		setPenColor();
+		setPenRadius();
 		int src = edge.getSrc();
 		int dst = edge.getDest();
 		double x0 = _graph.getNode(src).getLocation().x();

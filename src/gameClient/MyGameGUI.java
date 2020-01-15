@@ -27,7 +27,15 @@ public class MyGameGUI {
     static game_service game;
 
     public static void main(String[] args) {
+
+        Iterator<node_data> ite = _gg.getV().iterator();
+        while (ite.hasNext()){
+            node_data l = ite.next();
+            System.out.println("key : "+l.getKey() +"Position"+l.getLocation());
+        }
         init(2);
+        Drawg();
+        StdDraw.pause(20320142);
     }
 
     public static void init(int scenario_num) {
@@ -62,6 +70,16 @@ public class MyGameGUI {
 
         }
     }
+
+    public static void Drawg(){
+        StdDraw.Init(_gg,game);
+        StdDraw.DrawCanvas();
+        DrawNodes();
+        DrawEdges();
+        DrawFruits();
+        DrawRobots();
+    }
+
     public static void DrawNodes(){
         Iterator<node_data> nodeIte = _gg.getV().iterator();
         while (nodeIte.hasNext()) {
