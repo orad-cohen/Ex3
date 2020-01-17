@@ -32,8 +32,12 @@ import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
+import static gameClient.MyGameGUI.*;
+
 import gameClient.MyGameGUI;
 import gui.DrawGraph;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -643,6 +647,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	private StdDraw() { }
 	private static DGraph _graph = new DGraph();
 	private static game_service _game;
+
 
 	// static initializer
 	static {
@@ -1422,6 +1427,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		if (ws < 0 || hs < 0) throw new IllegalArgumentException("image " + filename + " is corrupt");
 		if (ws <= 1 && hs <= 1) pixel(x, y);
 		else {
+
 			offscreen.drawImage(image, (int) Math.round(xs - ws/2.0),
 					(int) Math.round(ys - hs/2.0),
 					(int) Math.round(ws),
@@ -1651,12 +1657,32 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 	}
-	public static void DrawFruit(int value, int type, Point3D pos){
+	public static void DrawRobot(){
+		try{
+			JSONArray bots = new JSONArray(MyGameGUI.getGame().getRobots().toString());
+
+			for(int i = 0;i<bots.length();i++){
+				JSONObject robObj = new JSONObject(bots.get(i).toString());
+				JSONObject curBot = new JSONObject(robObj.get("Robot").toString());
+				String pos = curBot.get("pos").toString();
+				Point3D loc = new Point3D(pos);
+
+				picture(loc.x(), loc.y(), "data\\robot.png",0.002,0.001);
+
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+
+
+	}
+	public static void DrawFruit( int type, Point3D pos){
 		if(type == 1){
-			picture(pos.x(), pos.y(), "data/banana.png");
+			picture(pos.x(), pos.y(), "data\\banana.png",0.001,0.001);
 		}
 		else{
-			picture(pos.x(), pos.y(), "data/apple.png");
+			picture(pos.x(), pos.y(), "data\\apple.png",0.001,0.001);
 
 		}
 

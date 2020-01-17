@@ -17,30 +17,23 @@ import org.json.JSONObject;
 import utils.Point3D;
 import utils.StdDraw;
 
+import java.io.Serializable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import java.util.Iterator;
 
-public class MyGameGUI {
+public class MyGameGUI implements Serializable {
+    private static final long serialVersionUID = 1L;
     static DGraph _gg = new DGraph();
     static game_service game;
 
-    public static void main(String[] args) {
 
-        Iterator<node_data> ite = _gg.getV().iterator();
-        while (ite.hasNext()){
-            node_data l = ite.next();
-            System.out.println("key : "+l.getKey() +"Position"+l.getLocation());
-        }
-        init(2);
-        Drawg();
-        StdDraw.pause(20320142);
-    }
 
-    public static void init(int scenario_num) {
-
-        game_service game = Game_Server.getServer(scenario_num);
+    public static void init() {
+        int scenario_num = (int)(Math.random()*100%24);
+        game = Game_Server.getServer(scenario_num);
 
         try {
             JSONObject gameJSON = new JSONObject(game.getGraph());
@@ -65,19 +58,21 @@ public class MyGameGUI {
 
                 _gg.connect(src, dest, w);
             }
+            DrawEverything();
         }
         catch (Exception e){
 
         }
     }
 
-    public static void Drawg(){
+    public static void DrawEverything(){
         StdDraw.Init(_gg,game);
         StdDraw.DrawCanvas();
         DrawNodes();
         DrawEdges();
         DrawFruits();
         DrawRobots();
+        StdDraw.pause(124124124);
     }
 
     public static void DrawNodes(){
@@ -104,6 +99,38 @@ public class MyGameGUI {
 
     }
     public static void DrawRobots () {
+        System.out.println(game);
+        LinkedList<Integer> bots = new LinkedList<>();
+        try{
+            JSONObject obj = new JSONObject(game.toString());
+            JSONObject obj2 = new JSONObject(obj.get("GameServer").toString());
+            int i = Integer.parseInt(obj2.get("robots").toString());
+            while(i>0){
+                int x = (int)(Math.random()*1000*_gg.nodeSize()%_gg.nodeSize());
+                if(bots.contains(x)){
+                    continue;
+                }
+                else{
+                    bots.add(x);
+                    game.addRobot(x);
+                    i--;
+                }
+
+
+
+
+            }
+
+            StdDraw.DrawRobot();
+
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+
 
 
     }
@@ -112,11 +139,13 @@ public class MyGameGUI {
             JSONArray Fruits = new JSONArray(game.getFruits());
             int i = 0;
             while (i < Fruits.length()) {
-                JSONObject curFruit = new JSONObject(Fruits.get(i));
-                int value = Integer.parseInt(curFruit.get("value").toString());
+                JSONObject Fruit = new JSONObject(Fruits.get(i).toString());
+                JSONObject curFruit = new JSONObject(Fruit.get("Fruit").toString());
+
                 int type = Integer.parseInt(curFruit.get("type").toString());
                 Point3D loc = new Point3D(curFruit.get("pos").toString());
-                StdDraw.DrawFruit(value, type, loc);
+                StdDraw.DrawFruit(type, loc);
+                i++;
             }
 
 
@@ -124,6 +153,13 @@ public class MyGameGUI {
 
         }
 
+
+    }
+
+
+
+    public static game_service getGame(){
+        return game;
 
     }
 }
