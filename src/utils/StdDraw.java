@@ -34,6 +34,7 @@ import dataStructure.graph;
 import dataStructure.node_data;
 import static gameClient.MyGameGUI.*;
 
+import gameClient.GuiUpdate;
 import gameClient.MyGameGUI;
 import gui.DrawGraph;
 import org.json.JSONArray;
@@ -74,19 +75,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.TreeSet;
-import java.util.NoSuchElementException;
+import java.util.*;
 import javax.imageio.ImageIO;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -491,7 +483,7 @@ import javax.swing.KeyStroke;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
+public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener, Runnable {
 
 	/**
 	 *  The color black.
@@ -647,7 +639,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	private StdDraw() { }
 	private static DGraph _graph = new DGraph();
 	private static game_service _game;
-
+	private static double x_max = Double.NEGATIVE_INFINITY;
+	private static double y_max = Double.NEGATIVE_INFINITY;
+	private static double y_min = Double.POSITIVE_INFINITY;
+	private static double x_min = Double.POSITIVE_INFINITY;
 
 	// static initializer
 	static {
@@ -975,7 +970,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 */
 	public static void line(double x0, double y0, double x1, double y1) {
 		offscreen.draw(new Line2D.Double(scaleX(x0), scaleY(y0), scaleX(x1), scaleY(y1)));
-		draw();
+
 	}
 
 	/**
@@ -1201,7 +1196,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		double hs = factorY(2*halfHeight);
 		if (ws <= 1 && hs <= 1) pixel(x, y);
 		else offscreen.fill(new Rectangle2D.Double(xs - ws/2, ys - hs/2, ws, hs));
-		draw();
+
 	}
 
 
@@ -1370,7 +1365,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		if (ws < 0 || hs < 0) throw new IllegalArgumentException("image " + filename + " is corrupt");
 
 		offscreen.drawImage(image, (int) Math.round(xs - ws/2.0), (int) Math.round(ys - hs/2.0), null);
-		draw();
+
 	}
 
 	/**
@@ -1399,7 +1394,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		offscreen.drawImage(image, (int) Math.round(xs - ws/2.0), (int) Math.round(ys - hs/2.0), null);
 		offscreen.rotate(Math.toRadians(+degrees), xs, ys);
 
-		draw();
+
 	}
 
 	/**
@@ -1433,7 +1428,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 					(int) Math.round(ws),
 					(int) Math.round(hs), null);
 		}
-		draw();
+
 	}
 
 
@@ -1470,7 +1465,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				(int) Math.round(hs), null);
 		offscreen.rotate(Math.toRadians(+degrees), xs, ys);
 
-		draw();
+
 	}
 
 	/***************************************************************************
@@ -1493,7 +1488,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		int ws = metrics.stringWidth(text);
 		int hs = metrics.getDescent();
 		offscreen.drawString(text, (float) (xs - ws/2.0), (float) (ys + hs));
-		draw();
+
 	}
 
 	/**
@@ -1614,15 +1609,13 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 	public static void Init(DGraph g, game_service e ){
-		_graph = g;
-		_game = e;
+		_graph = gameClient.MyGameGUI.getGraph();
+		_game = gameClient.MyGameGUI.getGame();
 	}
 	public static void DrawCanvas(){
+		_graph = MyGameGUI.getGraph();
 		Iterator<node_data> nodeIte = _graph.getV().iterator();
-		double x_max = Double.NEGATIVE_INFINITY;
-		double y_max = Double.NEGATIVE_INFINITY;
-		double y_min = Double.POSITIVE_INFINITY;
-		double x_min = Double.POSITIVE_INFINITY;
+
 		while (nodeIte.hasNext()){
 			node_data node = nodeIte.next();
 			x_max = Math.max(x_max, node.getLocation().x());
@@ -1669,6 +1662,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 				picture(loc.x(), loc.y(), "data\\robot.png",0.002,0.001);
 
+
 			}
 		}
 		catch (Exception e){
@@ -1685,6 +1679,56 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			picture(pos.x(), pos.y(), "data\\apple.png",0.001,0.001);
 
 		}
+
+
+	}
+	public static void DrawTime(String s){
+		double xdif = Math.abs(x_max)+Math.abs(x_min);
+		double ydif = Math.abs(y_max)+Math.abs(y_min);
+		setPenColor(Color.white);
+		setPenColor(Color.red);
+		text(x_max,y_max, s);
+	}
+	public static void backgound(){
+		setPenColor(Color.white);
+		filledSquare((x_max-Math.abs(x_min)),y_max-Math.abs(y_min) , 100);
+	}
+	public static void nextNode(int id){
+		List<String> log = MyGameGUI.getGame().move();
+		try{
+			GuiUpdate gui = new GuiUpdate();
+			gui.start();
+			for(int i=0;i<log.size();i++) {
+			String robot_json = log.get(i);
+			JSONObject line = new JSONObject(robot_json);
+			JSONObject ttt = line.getJSONObject("Robot");
+
+			int rid = ttt.getInt("id");
+			int src = ttt.getInt("src");
+			int dest = ttt.getInt("dest");
+			if(dest!=-1){
+				System.out.println(dest);
+
+				return;
+
+			}
+			Iterator<edge_data> Edges = MyGameGUI.getGraph().getE(src).iterator();
+			Integer[] arr = new Integer[MyGameGUI.getGraph().getE(src).size()];
+			int c = 0;
+			while(Edges.hasNext()){
+				arr[c++] = Edges.next().getDest();
+			}
+
+			Object NodeDest = JOptionPane.showInputDialog(null, "Choose dest node", "ID: "+ rid +" Src: "+src,JOptionPane.INFORMATION_MESSAGE, null, arr, arr[0]);
+			dest = (Integer)NodeDest;
+			MyGameGUI.getGame().chooseNextEdge(rid, dest);
+
+
+
+		}		}
+			catch(Exception e){
+				e.printStackTrace();
+			}
 
 
 	}
@@ -1965,6 +2009,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 
+
 	/**
 	 * Test client.
 	 *
@@ -1993,6 +2038,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		StdDraw.text(0.8, 0.8, "white text");
 	}
 
+	@Override
+	public void run() {
+		DrawRobot();
+	}
 }
 
 

@@ -2,6 +2,7 @@ package Tests;
 
 import gameClient.MyGameGUI;
 import org.junit.jupiter.api.Test;
+import utils.StdDraw;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +11,10 @@ class MyGameGUITest {
     @Test
     void init() {
 
-        MyGameGUI.init();
+        MyGameGUI _gui = new MyGameGUI();
+        _gui.run();
+
+
     }
 
     @Test

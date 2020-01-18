@@ -16,7 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import utils.Point3D;
 import utils.StdDraw;
-
+import java.lang.Thread;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,8 +24,8 @@ import java.util.List;
 
 import java.util.Iterator;
 
-public class MyGameGUI implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class MyGameGUI extends Thread {
+
     static DGraph _gg = new DGraph();
     static game_service game;
 
@@ -58,21 +58,23 @@ public class MyGameGUI implements Serializable {
 
                 _gg.connect(src, dest, w);
             }
-            DrawEverything();
+            StdDraw.Init(_gg, game);
+
+            StdDraw.DrawCanvas();
+            StdDraw.enableDoubleBuffering();
+            DrawRobots();
+
         }
         catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 
     public static void DrawEverything(){
-        StdDraw.Init(_gg,game);
-        StdDraw.DrawCanvas();
-        DrawNodes();
-        DrawEdges();
-        DrawFruits();
-        DrawRobots();
-        StdDraw.pause(124124124);
+
+
+
+
     }
 
     public static void DrawNodes(){
@@ -90,16 +92,23 @@ public class MyGameGUI implements Serializable {
             Iterator<edge_data> edgeIte = _gg.getE(nodeIte.next().getKey()).iterator();
             while (edgeIte != null && edgeIte.hasNext()) {
                 edge_data next = edgeIte.next();
-                StdDraw.DrawEdge(next);
-            }
+                StdDraw.DrawEdge(next);            }
 
 
         }
 
 
     }
+    public static void AddRobot(int src){
+        game.addRobot(src);
+    }
+    public static void MoveRobot(int id, int dest){
+        game.chooseNextEdge(id,dest);
+    }
+    public static void Manual(){
+        StdDraw.nextNode(0);
+    }
     public static void DrawRobots () {
-        System.out.println(game);
         LinkedList<Integer> bots = new LinkedList<>();
         try{
             JSONObject obj = new JSONObject(game.toString());
@@ -160,6 +169,40 @@ public class MyGameGUI implements Serializable {
 
     public static game_service getGame(){
         return game;
+
+    }
+    public static DGraph getGraph(){
+        return _gg;
+    }
+
+    @Override
+    public void run() {
+        init();
+        game.startGame();
+        GuiUpdate Update = new GuiUpdate();
+        Update.setPriority(Thread.MAX_PRIORITY);
+        Update.start();
+
+        while(game.isRunning()){
+            try{
+
+                Manual();
+                Thread.sleep(200);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+        System.out.println(game.toString());
+
+        return;
+
+
+
 
     }
 }
