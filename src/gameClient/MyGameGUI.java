@@ -126,8 +126,6 @@ public class MyGameGUI extends Thread {
                 }
 
 
-
-
             }
 
             StdDraw.DrawRobot();
@@ -164,7 +162,6 @@ public class MyGameGUI extends Thread {
 
 
     }
-
 
 
     public static game_service getGame(){
