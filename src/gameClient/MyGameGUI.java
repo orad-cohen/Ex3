@@ -137,10 +137,8 @@ public class MyGameGUI extends Thread {
             e.printStackTrace();
         }
 
-
-
-
     }
+
     public static void DrawFruits () {
         try {
             JSONArray Fruits = new JSONArray(game.getFruits());
