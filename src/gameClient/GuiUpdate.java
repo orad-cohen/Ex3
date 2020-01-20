@@ -5,22 +5,25 @@ import utils.StdDraw;
 import static gameClient.MyGameGUI.*;
 
 public class GuiUpdate extends Thread {
+    static StdDraw Draw;
     @Override
     public void run() {
-        while (MyGameGUI.getGame().isRunning()){
+
+        while (GameClient.isRunning()){
+
            try{
-               StdDraw.backgound();
+               Draw.backgound();
                DrawNodes();
                DrawEdges();
                DrawFruits();
-               StdDraw.DrawRobot();
-               String s = ""+(MyGameGUI.getGame().timeToEnd()/1000);
-               StdDraw.DrawTime(s);
-               StdDraw.show();
+               Draw.DrawRobot();
+               String s = ""+(GameClient.getGame().timeToEnd()/1000);
+               Draw.DrawTime(s);
+               Draw.show();
                Thread.sleep(100);
            }
             catch (Exception e){
-
+                e.printStackTrace();
             }
         }
 

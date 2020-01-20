@@ -34,22 +34,14 @@ import dataStructure.graph;
 import dataStructure.node_data;
 import static gameClient.MyGameGUI.*;
 
+import gameClient.GameClient;
 import gameClient.GuiUpdate;
 import gameClient.MyGameGUI;
 import gui.DrawGraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.FileDialog;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
+import java.awt.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,6 +68,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.util.*;
+import java.util.List;
 import javax.imageio.ImageIO;
 
 import javax.swing.*;
@@ -483,7 +476,7 @@ import javax.swing.*;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener, Runnable {
+public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
 	/**
 	 *  The color black.
@@ -1608,10 +1601,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 
 
-	public static void Init(DGraph g, game_service e ){
-		_graph = gameClient.MyGameGUI.getGraph();
-		_game = gameClient.MyGameGUI.getGame();
-	}
+
 	public static void DrawCanvas(){
 		_graph = MyGameGUI.getGraph();
 		Iterator<node_data> nodeIte = _graph.getV().iterator();
@@ -1652,15 +1642,18 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 	public static void DrawRobot(){
 		try{
-			JSONArray bots = new JSONArray(MyGameGUI.getGame().getRobots().toString());
+			JSONArray bots = new JSONArray(GameClient.getGame().getRobots().toString());
 
 			for(int i = 0;i<bots.length();i++){
 				JSONObject robObj = new JSONObject(bots.get(i).toString());
 				JSONObject curBot = new JSONObject(robObj.get("Robot").toString());
 				String pos = curBot.get("pos").toString();
 				Point3D loc = new Point3D(pos);
-
+				setPenColor(Color.RED);
+				setPenRadius(0.3);
+				text(x_max/2, y_max, robObj.get("Robot").toString());
 				picture(loc.x(), loc.y(), "data\\robot.png",0.002,0.001);
+				Thread.sleep(30);
 
 
 			}
@@ -1683,21 +1676,38 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 	}
 	public static void DrawTime(String s){
-		double xdif = Math.abs(x_max)+Math.abs(x_min);
-		double ydif = Math.abs(y_max)+Math.abs(y_min);
-		setPenColor(Color.white);
-		setPenColor(Color.red);
-		text(x_max,y_max, s);
-	}
+		try{
+			JSONArray bots = new JSONArray(GameClient.getGame().getRobots().toString());
+
+			for(int i = 0;i<bots.length();i++){
+				JSONObject robObj = new JSONObject(bots.get(i).toString());
+				JSONObject curBot = new JSONObject(robObj.get("Robot").toString());
+				String pos = curBot.get("pos").toString();
+				Point3D loc = new Point3D(pos);
+				setPenColor(Color.RED);
+				setPenRadius(0.3);
+				String l = curBot.toString();
+
+				text(x_max/2, y_max, l);}
+			setPenColor(Color.white);
+			setPenColor(Color.red);
+			text(x_max,y_max, s);
+
+		}
+			catch(Exception e){
+
+
+			}}
+
+
 	public static void backgound(){
 		setPenColor(Color.white);
 		filledSquare((x_max-Math.abs(x_min)),y_max-Math.abs(y_min) , 100);
 	}
 	public static void nextNode(int id){
-		List<String> log = MyGameGUI.getGame().move();
+		List<String> log = GameClient.getGame().move();
 		try{
-			GuiUpdate gui = new GuiUpdate();
-			gui.start();
+
 			for(int i=0;i<log.size();i++) {
 			String robot_json = log.get(i);
 			JSONObject line = new JSONObject(robot_json);
@@ -1707,7 +1717,6 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			int src = ttt.getInt("src");
 			int dest = ttt.getInt("dest");
 			if(dest!=-1){
-				System.out.println(dest);
 
 				return;
 
@@ -1721,7 +1730,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 			Object NodeDest = JOptionPane.showInputDialog(null, "Choose dest node", "ID: "+ rid +" Src: "+src,JOptionPane.INFORMATION_MESSAGE, null, arr, arr[0]);
 			dest = (Integer)NodeDest;
-			MyGameGUI.getGame().chooseNextEdge(rid, dest);
+			GameClient.getGame().chooseNextEdge(rid, dest);
 
 
 
@@ -2038,10 +2047,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		StdDraw.text(0.8, 0.8, "white text");
 	}
 
-	@Override
-	public void run() {
-		DrawRobot();
-	}
+
 }
 
 

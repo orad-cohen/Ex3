@@ -27,7 +27,9 @@ import java.util.List;
 
 import java.util.Iterator;
 
-public class MyGameGUI extends Thread {
+import static gameClient.GameAuto.*;
+
+public class MyGameGUI extends Thread{
 
     static DGraph _gg = new DGraph();
     static game_service game;
@@ -35,8 +37,9 @@ public class MyGameGUI extends Thread {
 
 
     public static void init() {
-        int scenario_num = (int)(Math.random()*100%24);
-        game = Game_Server.getServer(scenario_num);
+
+
+
 
         try {
             FileWriter file = new FileWriter("Spectator.kml");
@@ -63,11 +66,10 @@ public class MyGameGUI extends Thread {
 
                 _gg.connect(src, dest, w);
             }
-            StdDraw.Init(_gg, game);
-
             StdDraw.DrawCanvas();
             StdDraw.enableDoubleBuffering();
-            DrawRobots();
+
+
 
             File whoa = new File("Spectator.kml");
             kml.writeFile(whoa);
@@ -144,8 +146,10 @@ public class MyGameGUI extends Thread {
             e.printStackTrace();
         }
 
-    }
 
+
+
+    }
     public static void DrawFruits () {
         try {
             JSONArray Fruits = new JSONArray(game.getFruits());
@@ -179,48 +183,38 @@ public class MyGameGUI extends Thread {
 
     @Override
     public void run() {
+
+
         init();
-        game.startGame();
+
         GuiUpdate Update = new GuiUpdate();
-        Update.setPriority(Thread.MAX_PRIORITY);
         Update.start();
+        int i =0;
+        while (!GameClient.isRunning()){
 
         while(game.isRunning()){
             try{
-
-                Manual();
-                Thread.sleep(200);
+                sleep(10);
             }
             catch (Exception e){
-                e.printStackTrace();
+
             }
-
-
-
         }
 
-        System.out.println(game.toString());
+        while(GameClient.isRunning()){
 
-        return;
+
+
+
+
+        }}
+
+
+
+
 
 
 
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

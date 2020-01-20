@@ -56,6 +56,7 @@ public class SimpleGameClient {
 		}
 		catch (JSONException e) {e.printStackTrace();}
 		game.startGame();
+		System.out.println(game.isRunning());
 		// should be a Thread!!!
 		while(game.isRunning()) {
 			moveRobots(game, gg);
