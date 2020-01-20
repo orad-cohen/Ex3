@@ -22,7 +22,7 @@ import dataStructure.node_data;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class  KML_Logger {
+public class  KML_Logger extends Thread{
     private Document doc;
     private Element root;
     public KML_Logger() {
@@ -104,9 +104,22 @@ public class  KML_Logger {
     }
 
 
-    public void addItem(String longta,String lat,String alt,String time){
+    public void addItem(String longta,String lat,String alt,String time,char type){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
+
+        Element Style = doc.createElement("Style");
+        Placemark.appendChild(Style);
+
+        Element IconStyle = doc.createElement("IconStyle");
+        Style.appendChild(IconStyle);
+
+        Element Icon = doc.createElement("Icon");
+        IconStyle.appendChild(Icon);
+
+        Element href = doc.createElement("href");
+        href.appendChild(doc.createTextNode("http://maps.google.com/mapfiles/kml/shapes/webcam.png"));
+        Icon.appendChild(href);
 
         Element tiTimeStampme = doc.createElement("TimeStamp");
         Placemark.appendChild(tiTimeStampme);
@@ -114,10 +127,6 @@ public class  KML_Logger {
         Element when = doc.createElement("when");
         when.appendChild(doc.createTextNode(time));
         tiTimeStampme.appendChild(when);
-
-        Element styleUrl = doc.createElement("styleUrl");
-        styleUrl.appendChild(doc.createTextNode("#m_ylw-pushpin"));
-        Placemark.appendChild(styleUrl);
 
         Element Point = doc.createElement("Point");
         Placemark.appendChild(Point);
@@ -135,10 +144,6 @@ public class  KML_Logger {
     public void addNode(String pos){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
-
-        Element styleUrl = doc.createElement("styleUrl");
-        styleUrl.appendChild(doc.createTextNode("#m_ylw-pushpin"));
-        Placemark.appendChild(styleUrl);
 
         Element Point = doc.createElement("Point");
         Placemark.appendChild(Point);
@@ -181,20 +186,19 @@ public class  KML_Logger {
 
 
     public static void main(String[] args){
-
        KML_Logger one = new KML_Logger();
        try{
            FileWriter file = new FileWriter("new.kml");
-           one.addItem("34","35","0","1");
-           one.addItem("34.001","35.001","0","2");
-           one.addItem("34.002","35.002","0","3");
-           one.addItem("34.003","35.003","0","4");
-           one.addItem("34.004","35.004","0","5");
-           one.addItem("34.005","35.005","0","6");
-           one.addItem("34.006","35.006","0","7");
-           one.addItem("34.007","35.007","0","8");
-           one.addItem("34.008","35.008","0","9");
-           one.addItem("34.009","35.009","0","10");
+           one.addItem("34","35","0","1",'r');
+           one.addItem("34.001","35.001","0","2",'r');
+           one.addItem("34.002","35.002","0","3",'r');
+           one.addItem("34.003","35.003","0","4",'r');
+           one.addItem("34.004","35.004","0","5",'r');
+           one.addItem("34.005","35.005","0","6",'r');
+           one.addItem("34.006","35.006","0","7",'r');
+           one.addItem("34.007","35.007","0","8",'r');
+           one.addItem("34.008","35.008","0","9",'r');
+           one.addItem("34.009","35.009","0","10",'r');
            one.addEdge("34,35,0","34.001,35.001,0");
            File whoa = new File("new.kml");
            one.writeFile(whoa);
@@ -202,6 +206,12 @@ public class  KML_Logger {
        catch (Exception e){
 
        }
+
+
+
+    }
+    @Override
+    public void run(){
 
 
 

@@ -16,6 +16,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import utils.Point3D;
 import utils.StdDraw;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.lang.Thread;
 import java.io.Serializable;
 import java.util.Iterator;
@@ -28,7 +31,7 @@ public class MyGameGUI extends Thread {
 
     static DGraph _gg = new DGraph();
     static game_service game;
-
+    static KML_Logger kml = new KML_Logger();
 
 
     public static void init() {
@@ -36,6 +39,8 @@ public class MyGameGUI extends Thread {
         game = Game_Server.getServer(scenario_num);
 
         try {
+            FileWriter file = new FileWriter("Spectator.kml");
+
             JSONObject gameJSON = new JSONObject(game.getGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
             String gameEdges = gameJSON.get("Edges").toString();
@@ -48,7 +53,7 @@ public class MyGameGUI extends Thread {
                 Point3D loc = new Point3D((String) nodes.getJSONObject(i).get("pos"));
 
                 _gg.addNode(new Node(id, loc));
-
+                kml.addNode((String) nodes.getJSONObject(i).get("pos"));
             }
 
             for (int i = 0; i < edges.length(); i++) {
@@ -64,6 +69,8 @@ public class MyGameGUI extends Thread {
             StdDraw.enableDoubleBuffering();
             DrawRobots();
 
+            File whoa = new File("Spectator.kml");
+            kml.writeFile(whoa);
         }
         catch (Exception e){
             e.printStackTrace();
