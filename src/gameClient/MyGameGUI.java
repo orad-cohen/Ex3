@@ -32,7 +32,6 @@ import static gameClient.GameAuto.*;
 public class MyGameGUI extends Thread{
 
     static DGraph _gg = new DGraph();
-    static game_service game;
     static KML_Logger kml = new KML_Logger();
 
 
@@ -44,7 +43,7 @@ public class MyGameGUI extends Thread{
         try {
             FileWriter file = new FileWriter("Spectator.kml");
 
-            JSONObject gameJSON = new JSONObject(game.getGraph());
+            JSONObject gameJSON = new JSONObject(GameClient.GetGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
             String gameEdges = gameJSON.get("Edges").toString();
 
@@ -120,7 +119,7 @@ public class MyGameGUI extends Thread{
     public static void DrawRobots () {
         LinkedList<Integer> bots = new LinkedList<>();
         try{
-            JSONObject obj = new JSONObject(game.toString());
+            JSONObject obj = new JSONObject(GameClient.getGame().toString());
             JSONObject obj2 = new JSONObject(obj.get("GameServer").toString());
             int i = Integer.parseInt(obj2.get("robots").toString());
             while(i>0){
@@ -152,7 +151,7 @@ public class MyGameGUI extends Thread{
     }
     public static void DrawFruits () {
         try {
-            JSONArray Fruits = new JSONArray(game.getFruits());
+            JSONArray Fruits = new JSONArray(GameClient.GetFruits());
             int i = 0;
             while (i < Fruits.length()) {
                 JSONObject Fruit = new JSONObject(Fruits.get(i).toString());
@@ -190,9 +189,9 @@ public class MyGameGUI extends Thread{
         GuiUpdate Update = new GuiUpdate();
         Update.start();
         int i =0;
-        while (!GameClient.isRunning()){
+        while (!GameClient.isRunning()){}
 
-        while(game.isRunning()){
+        while(GameClient.isRunning()){
             try{
                 sleep(10);
             }
@@ -207,7 +206,7 @@ public class MyGameGUI extends Thread{
 
 
 
-        }}
+        }
 
 
 

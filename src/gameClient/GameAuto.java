@@ -8,6 +8,7 @@ import dataStructure.Edge;
 import dataStructure.edge_data;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import utils.Point3D;
 import utils.StdDraw;
 
 import static utils.StdDraw.*;
@@ -31,7 +32,7 @@ public class GameAuto{
     public static void Driver(){
 
         try{
-            Thread.sleep(600);
+
             _graph = MyGameGUI.getGraph();
             String game = GameClient.getGame().toString();
 
@@ -57,6 +58,8 @@ public class GameAuto{
         GameClient.AddRobot(num);
     }
     public static void Auto(){
+
+
         List<String> log = GameClient.getGame().move();
         try{
 
@@ -95,7 +98,7 @@ public class GameAuto{
 
     public void run() {
         GameClient _Game = new GameClient();
-        _Game.SetGame(0);
+        _Game.SetGame(3);
         _Game.AddRobot(0);
         MyGameGUI _Gui = new MyGameGUI();
         _Gui.init();
@@ -111,8 +114,17 @@ public class GameAuto{
         }
 
 
+        while(!GameClient.isRunning()){
+            try{
 
-        while (_Gui.isAlive()) {
+                Thread.sleep(30);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        int i = 0;
+        while (GameClient.isRunning()) {
             Auto();
 
 
