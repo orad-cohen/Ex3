@@ -37,11 +37,8 @@ public class MyGameGUI extends Thread{
 
     public static void init() {
 
-
-
-
         try {
-            FileWriter file = new FileWriter("Spectator.kml");
+
 
             JSONObject gameJSON = new JSONObject(GameClient.GetGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
@@ -70,8 +67,8 @@ public class MyGameGUI extends Thread{
 
 
 
-            File whoa = new File("Spectator.kml");
-            kml.writeFile(whoa);
+
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -116,7 +113,7 @@ public class MyGameGUI extends Thread{
     public static void Manual(){
         StdDraw.nextNode(0);
     }
-    public static void DrawRobots () {
+    public static void PlaceRandom () {
         LinkedList<Integer> bots = new LinkedList<>();
         try{
             JSONObject obj = new JSONObject(GameClient.getGame().toString());
@@ -173,7 +170,7 @@ public class MyGameGUI extends Thread{
 
 
     public static game_service getGame(){
-        return game;
+        return GameClient.getGame();
 
     }
     public static DGraph getGraph(){
@@ -182,9 +179,6 @@ public class MyGameGUI extends Thread{
 
     @Override
     public void run() {
-
-
-        init();
 
         GuiUpdate Update = new GuiUpdate();
         Update.start();

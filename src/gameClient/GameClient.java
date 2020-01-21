@@ -68,6 +68,7 @@ public class GameClient extends Thread{
 
     @Override
     public void run(){
+
         getGame().startGame();
 
 

@@ -215,6 +215,21 @@ public class  KML_Logger extends Thread{
 
 
 
+        while(GameClient.isRunning()){
+
+
+
+
+            try{
+                Thread.sleep(30);
+            }
+            catch (Exception e){
+
+            }
+
+        }
+
+
     }
 
 
