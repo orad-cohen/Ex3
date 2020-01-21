@@ -41,8 +41,6 @@ public class MyGameGUI extends Thread{
 
 
         try {
-            FileWriter file = new FileWriter("Spectator.kml");
-
             JSONObject gameJSON = new JSONObject(GameClient.GetGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
             String gameEdges = gameJSON.get("Edges").toString();

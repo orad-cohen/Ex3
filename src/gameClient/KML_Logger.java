@@ -222,7 +222,6 @@ public class  KML_Logger extends Thread{
                 int type = curFruit.getInt("type");
                 String pos = curFruit.get("pos").toString();
                 addFruit(pos,Long.toString(time),type);
-                System.out.println(pos+" "+time+" "+type);
             }
         }
         catch (Exception e){
@@ -276,19 +275,19 @@ public class  KML_Logger extends Thread{
 
 
     public static void main(String[] args){
-       KML_Logger one = new KML_Logger();
-       try{
-           one.addRobot("34,35,0","0");
-           one.addEdge("34,35,0","34.001,35.001,0");
-           one.addRobot("34.001,35.001,0","1");
-           one.addEdge("34.001,35.001,0","34.002,35.002,0");
-           one.addRobot("34.002,35.002,0","2");
-           File whoa = new File("new.kml");
-           one.writeFile(whoa);
-       }
-       catch (Exception e){
+        KML_Logger one = new KML_Logger();
+        try{
+            one.addRobot("34,35,0","0");
+            one.addEdge("34,35,0","34.001,35.001,0");
+            one.addRobot("34.001,35.001,0","1");
+            one.addEdge("34.001,35.001,0","34.002,35.002,0");
+            one.addRobot("34.002,35.002,0","2");
+            File whoa = new File("new.kml");
+            one.writeFile(whoa);
+        }
+        catch (Exception e){
 
-       }
+        }
 
 
     }

@@ -274,8 +274,8 @@ public class GameAuto extends Thread{
         PlaceRobots();
 
         try{
-           _Game.start();
-           _Game.join();
+            _Game.start();
+            _Game.join();
             _Gui.start();
 
 
@@ -316,16 +316,6 @@ public class GameAuto extends Thread{
 
 
         }
-
-
-
-
-
-
-
-
-
-
 
 
     }
