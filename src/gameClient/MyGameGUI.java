@@ -37,12 +37,7 @@ public class MyGameGUI extends Thread{
 
     public static void init() {
 
-
-
-
         try {
-            FileWriter file = new FileWriter("Spectator.kml");
-
             JSONObject gameJSON = new JSONObject(GameClient.GetGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
             String gameEdges = gameJSON.get("Edges").toString();
@@ -64,14 +59,10 @@ public class MyGameGUI extends Thread{
                 double w = (double) edges.getJSONObject(i).get("w");
 
                 _gg.connect(src, dest, w);
+
             }
             StdDraw.DrawCanvas();
             StdDraw.enableDoubleBuffering();
-
-
-
-            File whoa = new File("Spectator.kml");
-            kml.writeFile(whoa);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -157,7 +148,7 @@ public class MyGameGUI extends Thread{
                 JSONObject Fruit = new JSONObject(Fruits.get(i).toString());
                 JSONObject curFruit = new JSONObject(Fruit.get("Fruit").toString());
 
-                int type = Integer.parseInt(curFruit.get("type").toString());
+                int type = curFruit.getInt("type");
                 Point3D loc = new Point3D(curFruit.get("pos").toString());
                 StdDraw.DrawFruit(type, loc);
                 i++;
@@ -185,13 +176,14 @@ public class MyGameGUI extends Thread{
 
 
         init();
-
+        KML_Logger log = new KML_Logger();
+        log.start();
         GuiUpdate Update = new GuiUpdate();
         Update.start();
         int i =0;
         while (!GameClient.isRunning()){}
 
-        while(GameClient.isRunning()){
+        while(GameClient.isRunning()||log.isAlive()){
             try{
                 sleep(10);
             }
@@ -199,20 +191,7 @@ public class MyGameGUI extends Thread{
 
             }
         }
-
-        while(GameClient.isRunning()){
-
-
-
-
-
-        }
-
-
-
-
-
-
+        KML_Logger.SaveFile();
 
 
     }

@@ -17,7 +17,7 @@ import gameClient.MyGameGUI;
 import java.util.Iterator;
 import java.util.List;
 
-public class GameAuto{
+public class GameAuto extends Thread{
     static DGraph _graph = new DGraph();
     Graph_Algo _algo = new Graph_Algo();
     static game_service game;
@@ -98,7 +98,7 @@ public class GameAuto{
 
     public void run() {
         GameClient _Game = new GameClient();
-        _Game.SetGame(3);
+        _Game.SetGame(0);
         _Game.AddRobot(0);
         MyGameGUI _Gui = new MyGameGUI();
         _Gui.init();
@@ -124,13 +124,20 @@ public class GameAuto{
             }
         }
         int i = 0;
+        String s = " ";
         while (GameClient.isRunning()) {
             Auto();
+            s = GameClient.getGame().toString();
+            try{
+                sleep(20);
+            }
+            catch (Exception e){
 
-
+            }
 
 
         }
+        System.out.println(s);
 
 
 
