@@ -109,6 +109,10 @@ public class Node implements node_data {
         this.tag=t;
 
     }
+    @Override
+    public String toString(){
+        return "Key: " +getKey();
+    }
 
 
 

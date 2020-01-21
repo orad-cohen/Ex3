@@ -37,7 +37,12 @@ public class MyGameGUI extends Thread{
 
     public static void init() {
 
+
+
+
         try {
+            FileWriter file = new FileWriter("Spectator.kml");
+
             JSONObject gameJSON = new JSONObject(GameClient.GetGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
             String gameEdges = gameJSON.get("Edges").toString();
@@ -59,10 +64,14 @@ public class MyGameGUI extends Thread{
                 double w = (double) edges.getJSONObject(i).get("w");
 
                 _gg.connect(src, dest, w);
-
             }
             StdDraw.DrawCanvas();
             StdDraw.enableDoubleBuffering();
+
+
+
+            File whoa = new File("Spectator.kml");
+            kml.writeFile(whoa);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -107,7 +116,7 @@ public class MyGameGUI extends Thread{
     public static void Manual(){
         StdDraw.nextNode(0);
     }
-    public static void DrawRobots () {
+    public static void PlaceRandom () {
         LinkedList<Integer> bots = new LinkedList<>();
         try{
             JSONObject obj = new JSONObject(GameClient.getGame().toString());
@@ -148,7 +157,7 @@ public class MyGameGUI extends Thread{
                 JSONObject Fruit = new JSONObject(Fruits.get(i).toString());
                 JSONObject curFruit = new JSONObject(Fruit.get("Fruit").toString());
 
-                int type = curFruit.getInt("type");
+                int type = Integer.parseInt(curFruit.get("type").toString());
                 Point3D loc = new Point3D(curFruit.get("pos").toString());
                 StdDraw.DrawFruit(type, loc);
                 i++;
@@ -164,7 +173,7 @@ public class MyGameGUI extends Thread{
 
 
     public static game_service getGame(){
-        return game;
+        return GameClient.getGame();
 
     }
     public static DGraph getGraph(){

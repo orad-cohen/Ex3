@@ -353,6 +353,9 @@ public class Graph_Algo implements graph_algorithms{
 
 				if(_graph.getE(nodeStack.peek().getKey())==null||nodeStack.peek().getKey()==dest){
 					nodeStack.pop();//if the top node has no edges or an edge that leads to the destination node
+					if(nodeStack.isEmpty()){
+						break;
+					}
 					edge = _graph.getE(nodeStack.peek().getKey()).iterator();//pop it and ignore, then go to to the next
 					continue;//edge
 				}
