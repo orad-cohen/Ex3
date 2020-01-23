@@ -30,48 +30,26 @@ package utils;
 import Server.game_service;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
-import dataStructure.graph;
 import dataStructure.node_data;
-import static gameClient.MyGameGUI.*;
-
 import gameClient.GameClient;
-import gameClient.GuiUpdate;
 import gameClient.MyGameGUI;
-import gui.DrawGraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-
+import java.awt.event.*;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
 import java.awt.image.WritableRaster;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.util.*;
 import java.util.List;
-import javax.imageio.ImageIO;
-
-import javax.swing.*;
+import java.util.*;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -1616,8 +1594,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		}
 		setCanvasSize((int)(Math.abs(x_max)+Math.abs(x_min))+900,(int)(Math.abs(y_max)+Math.abs(y_min))+900);
 
-		setXscale(x_min-Math.abs(x_max-x_min)/2,x_max+(Math.abs(x_max-x_min)/2));
-		setYscale(y_min-Math.abs(x_max-x_min)/2,y_max+Math.abs(x_max-x_min)/2);
+		setXscale(x_min-Math.abs(x_max-x_min)/4,x_max+(Math.abs(x_max-x_min)/4));
+		setYscale(y_min-Math.abs(x_max-x_min)/4,y_max+Math.abs(x_max-x_min)/4);
 	}
 
 
@@ -1649,11 +1627,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				JSONObject curBot = new JSONObject(robObj.get("Robot").toString());
 				String pos = curBot.get("pos").toString();
 				Point3D loc = new Point3D(pos);
-				setPenColor(Color.RED);
-				setPenRadius(0.3);
-				text(x_max/2, y_max, robObj.get("Robot").toString());
 				picture(loc.x(), loc.y(), "data\\robot.png",0.002,0.001);
-				Thread.sleep(30);
+
 
 
 			}
@@ -1666,9 +1641,11 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 	public static void DrawFruit( int type, Point3D pos){
 		if(type == 1){
+
 			picture(pos.x(), pos.y(), "data\\banana.png",0.001,0.001);
 		}
 		else{
+
 			picture(pos.x(), pos.y(), "data\\apple.png",0.001,0.001);
 
 		}

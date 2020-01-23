@@ -1,6 +1,5 @@
 package gameClient;
 
-import Server.Game_Server;
 import Server.game_service;
 import dataStructure.DGraph;
 import dataStructure.Node;
@@ -10,24 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import utils.Point3D;
 import utils.StdDraw;
-import dataStructure.edge_data;
-import dataStructure.node_data;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import utils.Point3D;
-import utils.StdDraw;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.lang.Thread;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
-import java.util.Iterator;
-
-import static gameClient.GameAuto.*;
+import static gameClient.GameAuto.game;
 
 public class MyGameGUI extends Thread{
 
@@ -76,7 +62,20 @@ public class MyGameGUI extends Thread{
     }
 
     public static void DrawEverything(){
+        try{
+            StdDraw.backgound();
+            DrawNodes();
+            DrawEdges();
+            DrawFruits();
+            StdDraw.DrawRobot();
+            String s = ""+(GameClient.getGame().timeToEnd()/1000);
+            StdDraw.DrawTime(s);
+            StdDraw.show();
 
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
 
 
@@ -180,27 +179,19 @@ public class MyGameGUI extends Thread{
     @Override
     public void run() {
 
-        GuiUpdate Update = new GuiUpdate();
-        Update.start();
-        int i =0;
-        while (!GameClient.isRunning()){}
-
         while(GameClient.isRunning()){
+            DrawEverything();
             try{
-                sleep(10);
+                sleep(30);
             }
             catch (Exception e){
 
             }
-        }
-
-        while(GameClient.isRunning()){
-
-
-
 
 
         }
+
+
 
 
 
