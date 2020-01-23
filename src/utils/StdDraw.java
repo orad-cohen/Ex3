@@ -31,6 +31,7 @@ import Server.game_service;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
+import gameClient.GameAuto;
 import gameClient.GameClient;
 import gameClient.MyGameGUI;
 import org.json.JSONArray;
@@ -544,7 +545,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * It is PMS 158. The RGB values are approximately (245, 128, 37).
 	 */
 	public static final Color PRINCETON_ORANGE = new Color(245, 128, 37);
-
+	private static int mode=-1;
+	private static int gameMode =-1;
 	// default colors
 	private static final Color DEFAULT_PEN_COLOR   = BLACK;
 	private static final Color DEFAULT_CLEAR_COLOR = WHITE;
@@ -1596,6 +1598,38 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 		setXscale(x_min-Math.abs(x_max-x_min)/4,x_max+(Math.abs(x_max-x_min)/4));
 		setYscale(y_min-Math.abs(x_max-x_min)/4,y_max+Math.abs(x_max-x_min)/4);
+
+	}
+	public static int SetMode(){
+		String[] s = {"Manual","Automatic"};
+		Object GameMode = JOptionPane.showInputDialog(null, "Choose game mode", "setup",JOptionPane.INFORMATION_MESSAGE, null, s, s[0]);
+		String dest = (String)GameMode;
+		if(dest=="Manual"){
+			return 1;
+		}
+		else{
+			return  2;
+		}
+	}
+	public static int getMode(){
+
+		return mode;
+	}
+	public static int SetGame(){
+		String[] pick = {"Random","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
+		Object GameMode = JOptionPane.showInputDialog(null, "Choose game mode", "setup",JOptionPane.NO_OPTION, null, pick, pick[0]);
+
+		if((String)(GameMode)=="Random"||(GameMode)==null){
+			return (int)(Math.random()*100%24);
+		}
+		else{
+
+			return (Integer.parseInt((String)GameMode));
+
+
+		}
+
+
 	}
 
 
@@ -1604,6 +1638,12 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		setPenRadius(0.01);
 		point(td.x(), td.y());
 		text(td.x(), td.y()+0.001, ""+ n.getKey());
+	}
+	public static String SaveKml(){
+		FileDialog chooser = new FileDialog(StdDraw.frame, "KML Saver", FileDialog.SAVE);
+		chooser.setVisible(true);
+		String filename = chooser.getDirectory()+chooser.getFile();
+	return filename;
 	}
 	public static void DrawEdge(edge_data edge){
 		setPenColor();
@@ -1654,18 +1694,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 	public static void DrawTime(String s){
 		try{
-			JSONArray bots = new JSONArray(GameClient.getGame().getRobots().toString());
 
-			for(int i = 0;i<bots.length();i++){
-				JSONObject robObj = new JSONObject(bots.get(i).toString());
-				JSONObject curBot = new JSONObject(robObj.get("Robot").toString());
-				String pos = curBot.get("pos").toString();
-				Point3D loc = new Point3D(pos);
-				setPenColor(Color.RED);
-				setPenRadius(0.3);
-				String l = curBot.toString();
 
-				text(x_max/2, y_max, l);}
 			setPenColor(Color.white);
 			setPenColor(Color.red);
 			text(x_max,y_max, s);
@@ -1681,7 +1711,21 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		setPenColor(Color.white);
 		filledSquare((x_max-Math.abs(x_min)),y_max-Math.abs(y_min) , 100);
 	}
-	public static void nextNode(int id){
+	public static void Manual(){
+
+		while (GameClient.isRunning()){
+			nextNode();
+			try{
+				Thread.sleep(50);
+			}
+			catch (Exception e){
+
+			}
+		}
+
+
+	}
+	public static void nextNode(){
 		List<String> log = GameClient.getGame().move();
 		try{
 
@@ -1705,9 +1749,15 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				arr[c++] = Edges.next().getDest();
 			}
 
-			Object NodeDest = JOptionPane.showInputDialog(null, "Choose dest node", "ID: "+ rid +" Src: "+src,JOptionPane.INFORMATION_MESSAGE, null, arr, arr[0]);
-			dest = (Integer)NodeDest;
-			GameClient.getGame().chooseNextEdge(rid, dest);
+			Object NodeDest = JOptionPane.showInputDialog(null, "Choose dest node", "ID: "+ rid +" Src: "+src,JOptionPane.OK_CANCEL_OPTION, null, arr, arr[0]);
+			if(NodeDest==null){
+				GameAuto.getGame().chooseNextEdge(rid, arr[0]);
+			}
+			else{
+				dest = (Integer)NodeDest;
+				GameAuto.getGame().chooseNextEdge(rid, dest);
+			}
+
 
 
 

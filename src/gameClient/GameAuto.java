@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import things.Fruit;
 import things.Robot;
 import utils.Point3D;
+import utils.StdDraw;
 
 import java.util.*;
 
@@ -22,6 +23,7 @@ public class GameAuto extends Thread{
     volatile ArrayList<Robot> Robots = new ArrayList<>();
     volatile LinkedList<Fruit> Fruits = new LinkedList();
     volatile HashMap<Integer,String> f = new HashMap<>();
+    public static int logger = -1;
 
     public static void updateGraph(){
         _graph = MyGameGUI.getGraph();
@@ -32,6 +34,9 @@ public class GameAuto extends Thread{
             node_arr[i] = NodeIte.next();
         }
         }
+    public static int getLogger(){
+        return logger;
+    }
     public void PlaceRobots(){
         String line = game.toString();
         try {
@@ -259,8 +264,8 @@ public class GameAuto extends Thread{
                 BotMover();    }
         }).start();
 
-        while (game.isRunning()){
-            game.move();
+        while (game.timeToEnd()/100>10){
+
             BotsUpdate();
             FruitUpdate();
             for(Robot r : Robots){
@@ -276,8 +281,7 @@ public class GameAuto extends Thread{
         }
 }
     public void BotMover(){
-        while(game.isRunning()){
-            game.move();
+        while(game.timeToEnd()/100>10){
             for(Robot r : Robots){
                 if (r.getDest()!=-1&&r.Last()==r.getSrc()){
                     continue;
@@ -296,25 +300,27 @@ public class GameAuto extends Thread{
 
         }
     }
+    public static game_service getGame(){
+        return game;
+    }
 
     @Override
     public void run(){
+
         GameClient _Game = new GameClient();
-        _Game.SetGame(23);
-        game = GameClient.getGame();
+        _Game.SetGame(StdDraw.SetGame()-1);
         MyGameGUI _Gui = new MyGameGUI();
+        KML_Logger Logger = new KML_Logger();
+        Logger.start();
+        int Mode = StdDraw.SetMode();
+
+        if(Mode==-1){return;}
+        game = GameClient.getGame();
         _Gui.init();
         updateGraph();
         PlaceRobots();
-
         game.startGame();
-
-        try{
-            _Gui.start();
-        }
-        catch (Exception e){
-
-        }
+        logger = 1;
 
         while(!game.isRunning()){
             try{
@@ -325,10 +331,28 @@ public class GameAuto extends Thread{
                 e.printStackTrace();
             }
         }
-        int i = 0;
-        System.out.println(game.isRunning());
-        Auto();
+        _Gui.start();
+        if(Mode==1){
+           StdDraw.Manual();
 
+        }
+        else{
+            Auto();
+        }
+        try{
+
+        }
+        catch (Exception e){
+
+        }
+        while (Logger.isAlive()){
+            try{
+                sleep(40);
+            }
+            catch (Exception e){
+
+            }
+        }
 
 
 

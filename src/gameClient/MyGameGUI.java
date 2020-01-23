@@ -38,7 +38,7 @@ public class MyGameGUI extends Thread{
                 Point3D loc = new Point3D((String) nodes.getJSONObject(i).get("pos"));
 
                 _gg.addNode(new Node(id, loc));
-                kml.addNode((String) nodes.getJSONObject(i).get("pos"));
+
             }
 
             for (int i = 0; i < edges.length(); i++) {
@@ -48,7 +48,9 @@ public class MyGameGUI extends Thread{
 
                 _gg.connect(src, dest, w);
             }
+
             StdDraw.DrawCanvas();
+
             StdDraw.enableDoubleBuffering();
 
 
@@ -109,9 +111,7 @@ public class MyGameGUI extends Thread{
     public static void MoveRobot(int id, int dest){
         game.chooseNextEdge(id,dest);
     }
-    public static void Manual(){
-        StdDraw.nextNode(0);
-    }
+
     public static void PlaceRandom () {
         LinkedList<Integer> bots = new LinkedList<>();
         try{
@@ -179,7 +179,7 @@ public class MyGameGUI extends Thread{
     @Override
     public void run() {
 
-        while(GameClient.isRunning()){
+        while(GameClient.getGame().timeToEnd()/100>10){
             DrawEverything();
             try{
                 sleep(30);

@@ -6,7 +6,7 @@ import Server.game_service;
 import java.util.List;
 
 public class GameClient extends Thread{
-    static volatile game_service game;
+    static  game_service game;
 
 
 
@@ -26,7 +26,7 @@ public class GameClient extends Thread{
     public static synchronized String GetFruits(){
         return getGame().getFruits().toString();
     }
-    public static synchronized boolean isRunning(){
+    public static  boolean isRunning(){
         return getGame().isRunning();
     }
     public static synchronized void  AddRobot(int src){

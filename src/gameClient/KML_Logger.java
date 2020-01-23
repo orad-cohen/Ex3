@@ -1,13 +1,12 @@
 package gameClient;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import dataStructure.edge_data;
+import dataStructure.node_data;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import utils.StdDraw;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,14 +15,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import dataStructure.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import utils.Point3D;
+import java.io.File;
+import java.util.Iterator;
 
 public class  KML_Logger extends Thread{
     private static Document doc;
@@ -123,7 +116,7 @@ public class  KML_Logger extends Thread{
         IconStyle.appendChild(Icon);
 
         Element href = doc.createElement("href");
-        if(type == 1) {
+        if(type == -1) {
             href.appendChild(doc.createTextNode("http://maps.google.com/mapfiles/kml/paddle/red-stars.png"));
         }
         else{
@@ -229,27 +222,41 @@ public class  KML_Logger extends Thread{
         }
     }
 
-    public static void SaveFile(){
-        File kmlFile = new File("Spectator.kml");
+    public static void SaveFile(String PathName){
+
+        File kmlFile = new File(PathName+".kml");
         writeFile(kmlFile);
     }
 
     @Override
     public void run(){
+        while (!(GameAuto.getLogger()==1)){
+            try{
+                sleep(40);
+            }
+            catch (Exception e){
+
+            }
+        }
+
         while (MyGameGUI.getGraph()==null){
 
         }
+
         Iterator<node_data> nodes = MyGameGUI.getGraph().getV().iterator();
         while(nodes.hasNext()){
+            try{
+                sleep(30);
+            }
+            catch (Exception e ){
+
+            }
             node_data CurNode = nodes.next();
             addNode(CurNode.getLocation().toString());
-
             Iterator<edge_data> EdgeIte = MyGameGUI.getGraph().getE(CurNode.getKey()).iterator();
             while(EdgeIte.hasNext()){
                 edge_data CurEdge = EdgeIte.next();
-
-                String pos2 = MyGameGUI.getGraph().getNode(CurEdge.getDest()).getLocation().toString();;
-
+                String pos2 = MyGameGUI.getGraph().getNode(CurEdge.getDest()).getLocation().toString();
                 addEdge(CurNode.getLocation().toString(),pos2);
             }
 
@@ -257,7 +264,7 @@ public class  KML_Logger extends Thread{
         long maxTime = 0;
         maxTime = GameClient.getGame().timeToEnd();
 
-        while (GameClient.isRunning()) {
+        while (GameClient.getGame().timeToEnd()/100>10) {
             try {
                 sleep(500);
             }
@@ -267,6 +274,8 @@ public class  KML_Logger extends Thread{
             insertRobot(maxTime - GameClient.getGame().timeToEnd());
             insertFruit(maxTime - GameClient.getGame().timeToEnd());
         }
+
+        SaveFile(StdDraw.SaveKml());
 
 
 
