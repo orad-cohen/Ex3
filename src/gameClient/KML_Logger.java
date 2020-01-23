@@ -1,5 +1,6 @@
 package gameClient;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
@@ -16,14 +17,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import dataStructure.DGraph;
-import dataStructure.graph;
-import dataStructure.node_data;
+import dataStructure.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import utils.Point3D;
 
 public class  KML_Logger extends Thread{
-    private Document doc;
+    private static Document doc;
     private Element root;
     public KML_Logger() {
         try {
@@ -38,48 +41,13 @@ public class  KML_Logger extends Thread{
             e.printStackTrace();
         }
     }
-    public void addPath(List<node_data> path, String pathName) {
-        Element placemark = doc.createElement("Placemark");
-        root.appendChild(placemark);
-
-        if(pathName != null) {
-            Element name = doc.createElement("name");
-            name.appendChild(doc.createTextNode(pathName));
-            placemark.appendChild(name);
-        }
-
-        Element lineString = doc.createElement("LineString");
-        placemark.appendChild(lineString);
-
-        Element extrude = doc.createElement("extrude");
-        extrude.appendChild(doc.createTextNode("1"));
-        lineString.appendChild(extrude);
-
-        Element tesselate = doc.createElement("tesselate");
-        tesselate.appendChild(doc.createTextNode("1"));
-        lineString.appendChild(tesselate);
-
-        Element altitudeMode = doc.createElement("altitudeMode");
-        altitudeMode.appendChild(doc.createTextNode("absolute"));
-        lineString.appendChild(altitudeMode);
-
-        Element coords = doc.createElement("coordinates");
-        String points = "";
-        ListIterator<node_data> itr = path.listIterator();
-        while(itr.hasNext()) {
-            node_data p = itr.next();
-            points += p.getLocation().x() + "," + p.getLocation().y()+ "\n";
-        }
-        coords.appendChild(doc.createTextNode(points));
-        lineString.appendChild(coords);
-    }
 
     /**
      * Write this KML object to a file.
      * @param file
      * @return
      */
-    public boolean writeFile(File file) {
+    public static boolean writeFile(File file) {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer();
@@ -104,7 +72,7 @@ public class  KML_Logger extends Thread{
     }
 
 
-    public void addItem(String longta,String lat,String alt,String time,char type){
+    public void addRobot(String pos,String time){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
 
@@ -136,7 +104,49 @@ public class  KML_Logger extends Thread{
         Point.appendChild(drawOrder);
 
         Element coordinates = doc.createElement("coordinates");
-        coordinates.appendChild(doc.createTextNode(longta+","+lat+","+alt));
+        coordinates.appendChild(doc.createTextNode(pos));
+        Point.appendChild(coordinates);
+
+    }
+
+    public void addFruit(String pos,String time,int type){
+        Element Placemark = doc.createElement("Placemark");
+        root.appendChild(Placemark);
+
+        Element Style = doc.createElement("Style");
+        Placemark.appendChild(Style);
+
+        Element IconStyle = doc.createElement("IconStyle");
+        Style.appendChild(IconStyle);
+
+        Element Icon = doc.createElement("Icon");
+        IconStyle.appendChild(Icon);
+
+        Element href = doc.createElement("href");
+        if(type == 1) {
+            href.appendChild(doc.createTextNode("http://maps.google.com/mapfiles/kml/paddle/red-stars.png"));
+        }
+        else{
+            href.appendChild(doc.createTextNode("http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png"));
+        }
+        Icon.appendChild(href);
+
+        Element tiTimeStampme = doc.createElement("TimeStamp");
+        Placemark.appendChild(tiTimeStampme);
+
+        Element when = doc.createElement("when");
+        when.appendChild(doc.createTextNode(time));
+        tiTimeStampme.appendChild(when);
+
+        Element Point = doc.createElement("Point");
+        Placemark.appendChild(Point);
+
+        Element drawOrder = doc.createElement("gx:drawOrder");
+        drawOrder.appendChild(doc.createTextNode("1"));
+        Point.appendChild(drawOrder);
+
+        Element coordinates = doc.createElement("coordinates");
+        coordinates.appendChild(doc.createTextNode(pos));
         Point.appendChild(coordinates);
 
     }
@@ -184,48 +194,98 @@ public class  KML_Logger extends Thread{
         LineString.appendChild(coordinates);
     }
 
+    public void insertRobot(long time){
+        try{
+            JSONArray bots = new JSONArray(GameClient.getGame().getRobots().toString());
 
-    public static void main(String[] args){
-       KML_Logger one = new KML_Logger();
-       try{
-           FileWriter file = new FileWriter("new.kml");
-           one.addItem("34","35","0","1",'r');
-           one.addItem("34.001","35.001","0","2",'r');
-           one.addItem("34.002","35.002","0","3",'r');
-           one.addItem("34.003","35.003","0","4",'r');
-           one.addItem("34.004","35.004","0","5",'r');
-           one.addItem("34.005","35.005","0","6",'r');
-           one.addItem("34.006","35.006","0","7",'r');
-           one.addItem("34.007","35.007","0","8",'r');
-           one.addItem("34.008","35.008","0","9",'r');
-           one.addItem("34.009","35.009","0","10",'r');
-           one.addEdge("34,35,0","34.001,35.001,0");
-           File whoa = new File("new.kml");
-           one.writeFile(whoa);
-       }
-       catch (Exception e){
+            for(int i = 0;i<bots.length();i++){
+                JSONObject robObj = new JSONObject(bots.get(i).toString());
+                JSONObject curBot = new JSONObject(robObj.get("Robot").toString());
 
-       }
-
-
-
+                String pos = curBot.get("pos").toString();
+                addRobot(pos,Long.toString(time));
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
+
+    public void insertFruit(long time){
+        try{
+            JSONArray Fruits = new JSONArray(GameClient.getGame().getFruits().toString());
+
+            for(int i = 0;i<Fruits.length();i++){
+                JSONObject Fruit = new JSONObject(Fruits.get(i).toString());
+                JSONObject curFruit = new JSONObject(Fruit.get("Fruit").toString());
+
+                int type = curFruit.getInt("type");
+                String pos = curFruit.get("pos").toString();
+                addFruit(pos,Long.toString(time),type);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void SaveFile(){
+        File kmlFile = new File("Spectator.kml");
+        writeFile(kmlFile);
+    }
+
     @Override
     public void run(){
+        while (MyGameGUI.getGraph()==null){
 
+        }
+        Iterator<node_data> nodes = MyGameGUI.getGraph().getV().iterator();
+        while(nodes.hasNext()){
+            node_data CurNode = nodes.next();
+            addNode(CurNode.getLocation().toString());
 
+            Iterator<edge_data> EdgeIte = MyGameGUI.getGraph().getE(CurNode.getKey()).iterator();
+            while(EdgeIte.hasNext()){
+                edge_data CurEdge = EdgeIte.next();
 
-        while(GameClient.isRunning()){
+                String pos2 = MyGameGUI.getGraph().getNode(CurEdge.getDest()).getLocation().toString();;
 
+                addEdge(CurNode.getLocation().toString(),pos2);
+            }
 
+        }
+        long maxTime = 0;
+        maxTime = GameClient.getGame().timeToEnd();
 
-
-            try{
-                Thread.sleep(30);
+        while (GameClient.isRunning()) {
+            try {
+                sleep(500);
             }
             catch (Exception e){
 
             }
+            insertRobot(maxTime - GameClient.getGame().timeToEnd());
+            insertFruit(maxTime - GameClient.getGame().timeToEnd());
+        }
+
+
+
+
+    }
+
+
+    public static void main(String[] args){
+        KML_Logger one = new KML_Logger();
+        try{
+            one.addRobot("34,35,0","0");
+            one.addEdge("34,35,0","34.001,35.001,0");
+            one.addRobot("34.001,35.001,0","1");
+            one.addEdge("34.001,35.001,0","34.002,35.002,0");
+            one.addRobot("34.002,35.002,0","2");
+            File whoa = new File("new.kml");
+            one.writeFile(whoa);
+        }
+        catch (Exception e){
 
         }
 
