@@ -18,7 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.util.Iterator;
 
-public class  KML_Logger extends Thread{
+public class  KML_Logger extends Thread{//extends thread for real time application
     private static Document doc;
     private Element root;
     public KML_Logger() {
@@ -57,14 +57,10 @@ public class  KML_Logger extends Thread{
     }
 
     /**
-     * Read the KML file into this object.
-     * @param file
+     * Adds a robot Placemark by position and time to the KML.
+     * @param pos,time
+     * @return
      */
-    public void readFile(File file) {
-        // TODO read KML file
-    }
-
-
     public void addRobot(String pos,String time){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
@@ -102,6 +98,11 @@ public class  KML_Logger extends Thread{
 
     }
 
+    /**
+     * Adds a fruit Placemark by position and time to the KML with added type if banana or apple.
+     * @param pos,time,type
+     * @return
+     */
     public void addFruit(String pos,String time,int type){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
@@ -144,6 +145,11 @@ public class  KML_Logger extends Thread{
 
     }
 
+    /**
+     * Adds Node by position.
+     * @param pos
+     * @return
+     */
     public void addNode(String pos){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
@@ -161,6 +167,11 @@ public class  KML_Logger extends Thread{
 
     }
 
+    /**
+     * Adds edge by position of two nodes.
+     * @param pos1,pos2
+     * @return
+     */
     public void addEdge(String pos1, String pos2){
         Element Placemark = doc.createElement("Placemark");
         root.appendChild(Placemark);
@@ -187,6 +198,12 @@ public class  KML_Logger extends Thread{
         LineString.appendChild(coordinates);
     }
 
+    /**
+     * Gets the robots from the game's JSON file and activates addRobot on each one.
+     * Time is meant to be added via the time remaining in the game.
+     * @param time
+     * @return
+     */
     public void insertRobot(long time){
         try{
             JSONArray bots = new JSONArray(GameClient.getGame().getRobots().toString());
@@ -204,6 +221,12 @@ public class  KML_Logger extends Thread{
         }
     }
 
+    /**
+     * Gets the fruits from the game's JSON file and activates addFruit on each one.
+     * Time is meant to be added via the time remaining in the game.
+     * @param time
+     * @return
+     */
     public void insertFruit(long time){
         try{
             JSONArray Fruits = new JSONArray(GameClient.getGame().getFruits().toString());
@@ -222,6 +245,11 @@ public class  KML_Logger extends Thread{
         }
     }
 
+    /**
+     * Saves the new KML file, while also asking for a name and location to be saved in.
+     * @param PathName
+     * @return
+     */
     public static void SaveFile(String PathName){
 
         File kmlFile = new File(PathName+".kml");
@@ -230,7 +258,7 @@ public class  KML_Logger extends Thread{
 
     @Override
     public void run(){
-        while (!(GameAuto.getLogger()==1)){
+        while (!(GameAuto.getLogger()==1)){//safety method to make sure run works and finishes when it should
             try{
                 sleep(40);
             }
@@ -239,12 +267,12 @@ public class  KML_Logger extends Thread{
             }
         }
 
-        while (MyGameGUI.getGraph()==null){
+        while (MyGameGUI.getGraph()==null){//makes sure KMLrun won't work while there is an empty Graph.
 
         }
 
         Iterator<node_data> nodes = MyGameGUI.getGraph().getV().iterator();
-        while(nodes.hasNext()){
+        while(nodes.hasNext()){//goes through the nodes
             try{
                 sleep(30);
             }
@@ -258,15 +286,15 @@ public class  KML_Logger extends Thread{
                 edge_data CurEdge = EdgeIte.next();
                 String pos2 = MyGameGUI.getGraph().getNode(CurEdge.getDest()).getLocation().toString();
                 addEdge(CurNode.getLocation().toString(),pos2);
-            }
+            }//addes all edges and nodes at start before going with the real time insertion of robots and fruits.
 
         }
-        long maxTime = 0;
+        long maxTime = 0;//sets the time for the game as to be added in the KML by (MaxTime - current time)
         maxTime = GameClient.getGame().timeToEnd();
 
         while (GameClient.getGame().timeToEnd()/100>10) {
             try {
-                sleep(500);
+                sleep(100);
             }
             catch (Exception e){
 
@@ -274,32 +302,17 @@ public class  KML_Logger extends Thread{
             insertRobot(maxTime - GameClient.getGame().timeToEnd());
             insertFruit(maxTime - GameClient.getGame().timeToEnd());
         }
-
-        SaveFile(StdDraw.SaveKml());
+        String s = StdDraw.SaveKml();
+        if(s == null){return;}
+        else {
+            SaveFile(s);
+        }
 
 
 
 
     }
 
-
-    public static void main(String[] args){
-        KML_Logger one = new KML_Logger();
-        try{
-            one.addRobot("34,35,0","0");
-            one.addEdge("34,35,0","34.001,35.001,0");
-            one.addRobot("34.001,35.001,0","1");
-            one.addEdge("34.001,35.001,0","34.002,35.002,0");
-            one.addRobot("34.002,35.002,0","2");
-            File whoa = new File("new.kml");
-            one.writeFile(whoa);
-        }
-        catch (Exception e){
-
-        }
-
-
-    }
 
 
 }

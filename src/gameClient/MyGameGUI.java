@@ -18,13 +18,12 @@ import static gameClient.GameAuto.game;
 public class MyGameGUI extends Thread{
 
     static DGraph _gg = new DGraph();
-    static KML_Logger kml = new KML_Logger();
+
 
 
     public static void init() {
 
         try {
-
 
             JSONObject gameJSON = new JSONObject(GameClient.GetGraph());
             String gameNodes = gameJSON.get("Nodes").toString();
@@ -52,10 +51,6 @@ public class MyGameGUI extends Thread{
             StdDraw.DrawCanvas();
 
             StdDraw.enableDoubleBuffering();
-
-
-
-
 
         }
         catch (Exception e){
@@ -188,16 +183,7 @@ public class MyGameGUI extends Thread{
 
             }
 
-
         }
-
-
-
-
-
-
-
-
 
 
     }

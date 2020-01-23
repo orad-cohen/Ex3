@@ -23,8 +23,13 @@ public class GameAuto extends Thread{
     volatile ArrayList<Robot> Robots = new ArrayList<>();
     volatile LinkedList<Fruit> Fruits = new LinkedList();
     volatile HashMap<Integer,String> f = new HashMap<>();
-    public static int logger = -1;
+    public static int logger = -1; //safety method for KML_Logger
 
+    /**
+     * Method to get the graph data from GUI to here
+     * @param
+     * @return
+     */
     public static void updateGraph(){
         _graph = MyGameGUI.getGraph();
         _algo.init(_graph);
@@ -33,10 +38,17 @@ public class GameAuto extends Thread{
         for (int i=0; NodeIte.hasNext();i++){
             node_arr[i] = NodeIte.next();
         }
-        }
-    public static int getLogger(){
+    }
+
+    public static int getLogger(){//returns Logger for the safety method
         return logger;
     }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     public void PlaceRobots(){
         String line = game.toString();
         try {
@@ -63,6 +75,11 @@ public class GameAuto extends Thread{
 
     }
 
+    /**
+     *
+     * @param
+     * @return
+     */
     private void getRobots(){
         Robots.clear();
         List<String> log = game.getRobots();
@@ -97,6 +114,11 @@ public class GameAuto extends Thread{
 
 
 
+    /**
+     *
+     * @param
+     * @return
+     */
     public void BotsUpdate() {
         List<String> log = GameClient.Moves();
         if (log != null) {
@@ -131,6 +153,11 @@ public class GameAuto extends Thread{
 
     }
 
+    /**
+     *
+     * @param
+     * @return
+     */
     public void FruitUpdate() {
         Fruits.clear();
         List<String> log = game.getFruits();
@@ -159,6 +186,11 @@ public class GameAuto extends Thread{
     }
 
 
+    /**
+     *
+     * @param
+     * @return
+     */
     public int[][] getFruits(){
         try{
             JSONArray Fruits = new JSONArray(game.getFruits().toString());
@@ -180,6 +212,12 @@ public class GameAuto extends Thread{
 
         return null;
     }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     public static int[][] Between(Point3D loc,int type){
         int[][] arr = new int[1][2];
         for(int i = 0; i<node_arr.length;i++){
@@ -204,6 +242,12 @@ public class GameAuto extends Thread{
 
         return null;
     }
+
+    /**
+     *
+     * @param a,b,c
+     * @return
+     */
     public static boolean iSBetween(Point3D a, Point3D b, Point3D c){
 
         double EPS = 0.0001;
@@ -217,11 +261,11 @@ public class GameAuto extends Thread{
 
     }
 
-
-
-
-
-
+    /**
+     *
+     * @param id
+     * @return
+     */
     public void setBestPath(int id){
         Robot r = Robots.get(id);
         if(r.getSrc()==r.Last()){
@@ -256,6 +300,11 @@ public class GameAuto extends Thread{
 
     }
 
+    /**
+     *
+     * @param
+     * @return
+     */
     public void Auto(){
 
         new Thread(new Runnable(){
@@ -279,7 +328,13 @@ public class GameAuto extends Thread{
 
             }
         }
-}
+    }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     public void BotMover(){
         while(game.timeToEnd()/100>10){
             for(Robot r : Robots){
@@ -345,6 +400,7 @@ public class GameAuto extends Thread{
         catch (Exception e){
 
         }
+        StdDraw.finalScore();
         while (Logger.isAlive()){
             try{
                 sleep(40);

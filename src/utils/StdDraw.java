@@ -1631,7 +1631,13 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 	}
+	public static void finalScore(){
+		String s = GameAuto.getGame().toString();
+		JOptionPane.showMessageDialog(null,s);
 
+
+
+	}
 
 	public static void DrawNode(Point3D td, node_data n){
 		setPenColor(Color.BLUE);
@@ -1698,7 +1704,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 			setPenColor(Color.white);
 			setPenColor(Color.red);
-			text(x_max,y_max, s);
+			text(x_max,y_max, "Time left: "+s);
 
 		}
 			catch(Exception e){
@@ -1713,7 +1719,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 	public static void Manual(){
 
-		while (GameClient.isRunning()){
+		while (GameAuto.getGame().isRunning()){
 			nextNode();
 			try{
 				Thread.sleep(50);
